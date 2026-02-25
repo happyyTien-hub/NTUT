@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘉里大榮 LINE 模擬提案 - 正式授權版</title>
+    <style>
+        :root {
+            --kerry-orange: #E87722;
+            --kerry-dark-grey: #4A4A4A;
+            --line-green: #06C755;
+            --line-bg: #849EB0;
+        }
+        body {
+            font-family: "Noto Sans TC", -apple-system, sans-serif;
+            margin: 0;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .phone-emulator {
+            width: 375px;
+            height: 812px;
+            background-color: var(--line-bg);
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            border: 8px solid #333;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        .line-header {
+            background-color: #353535;
+            color: white;
+            padding: 45px 15px 12px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+        .line-header span { margin-left: 10px; font-weight: bold; }
+
+        .chat-area { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg {
+            background: white; padding: 12px 16px; border-radius: 18px;
+            max-width: 75%; font-size: 14px; line-height: 1.5;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* 6 宮格 Rich Menu */
+        .rich-menu-grid {
+            background-color: #FFFFFF;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 120px);
+            gap: 8px;
+        }
+        .menu-item {
+            background: white; border: 1px solid #E0E0E0; border-radius: 12px;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; cursor: pointer; position: relative;
+        }
+        .highlight-item { border: 2.5px solid var(--kerry-orange) !important; background-color: #FFF9F5; }
+        .menu-icon { font-size: 28px; margin-bottom: 8px; }
+        .menu-text { font-size: 13px; font-weight: bold; color: var(--kerry-dark-grey); }
+        .btn-tag { background: var(--kerry-orange); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-top: 6px; }
+        .new-badge { position: absolute; top: -5px; right: -5px; background: #FF0000; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+
+        /* 擬真 LINE 授權視窗 */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: white; /* 模擬 LINE 授權頁通常是全白滿版 */
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .auth-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+        .auth-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .auth-content h3 { font-size: 18px; margin: 0 0 10px 0; }
+        .auth-content p { font-size: 13px; color: #333; line-height: 1.6; margin-bottom: 15px; }
+        .permission-box {
+            background: #F4F4F4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .perm-title { font-weight: bold; font-size: 14px; margin-bottom: 8px; display: block; }
+        .perm-item { font-size: 13px; color: #555; margin-bottom: 5px; display: flex; align-items: flex-start; }
+        .perm-item::before { content: "●"; font-size: 8px; margin-right: 8px; margin-top: 6px; }
+
+        .auth-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn-allow {
+            background-color: var(--line-green);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background: none;
+            color: #888;
+            border: none;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-emulator">
+    <div class="line-header">◀ <span>嘉里大榮 Kerry TJ</span></div>
+
+    <div class="chat-area">
+        <div class="msg">歡迎使用嘉里大榮！點擊「ID帳號綁定」即可開啟主動到貨推播服務。</div>
+    </div>
+
+    <div class="rich-menu-grid">
+        <div class="menu-item"><span class="menu-icon">🚚</span><span class="menu-text">預約寄件</span><span class="btn-tag">立即預約</span></div>
+        <div class="menu-item highlight-item" onclick="openModal()">
+            <div class="new-badge">NEW</div>
+            <span class="menu-icon">🔗</span><span class="menu-text">ID帳號綁定</span><span class="btn-tag">快速連結</span>
+        </div>
+        <div class="menu-item"><span class="menu-icon">📦</span><span class="menu-text">貨物追蹤</span><span class="btn-tag">查件進度</span></div>
+        <div class="menu-item"><span class="menu-icon">📍</span><span class="menu-text">據點查詢</span></div>
+        <div class="menu-item"><span class="menu-icon">💬</span><span class="menu-text">智能客服</span></div>
+        <div class="menu-item"><span class="menu-icon">👤</span><span class="menu-text">個人中心</span></div>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="auth-header">
+            <span onclick="closeModal()" style="cursor:pointer">取消</span>
+            <span>認證</span>
+            <span style="color:transparent">取消</span>
+        </div>
+        <div class="auth-content">
+            <h3>嘉里大榮 Kerry TJ</h3>
+            <p>本服務由嘉里大榮物流股份有限公司提供。請確認以下授權內容以完成會員帳號連結：</p>
+            
+            <div class="permission-box">
+                <span class="perm-title">個人資料存取權限：</span>
+                <div class="perm-item">LINE 帳號設定之姓名、個人圖片及狀態消息</div>
+                <div class="perm-item">內部識別碼 (UID)</div>
+                <div class="perm-item"><b>與此帳號連結之手機號碼</b></div>
+            </div>
+
+            <p style="font-size: 12px; color: #888;">
+                1. 透過本服務取得之資訊均由嘉里大榮負責管理。<br>
+                2. 您可隨時至 LINE「設定」 > 「我的帳號」 > 「連動中的應用程式」取消權限。<br>
+                3. 點擊「許可」即代表您同意本服務之隱私權政策與服務條款。
+            </p>
+        </div>
+        <div class="auth-footer">
+            <button class="btn-allow" onclick="handleSuccess()">許可</button>
+            <button class="btn-cancel" onclick="closeModal()">拒絕並返回</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal() { document.getElementById('overlay').style.display = 'flex'; }
+    function closeModal() { document.getElementById('overlay').style.display = 'none'; }
+    function handleSuccess() {
+        alert("許可成功！已完成 ID 帳號連結。");
+        closeModal();
+    }
+</script>
+
+</body>
+</html>
